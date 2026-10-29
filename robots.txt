@@ -1,0 +1,16 @@
+User-agent: Pinterestbot
+Allow: /
+
+User-agent: Pinterest
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: *
+Allow: /
+
+Sitemap: https://office-makeover.github.io/om/sitemap.xml
