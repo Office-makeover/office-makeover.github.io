@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://office-makeover.github.io/om/sitemap.xml
+Sitemap: https://office-makeover.github.io/sitemap.xml
