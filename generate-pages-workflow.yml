@@ -1,0 +1,51 @@
+name: Generate & Deploy Editorial Hub Pages + SEO
+
+on:
+  workflow_dispatch:
+    inputs:
+      sitemap_url:
+        description: 'Source Sitemap XML URL'
+        required: true
+        default: 'https://stylesdays.com/sitemap_index.xml'
+        type: string
+      hub_base_url:
+        description: 'Optional Custom Domain or GitHub Pages Base URL (leave blank to auto-detect)'
+        required: false
+        default: ''
+        type: string
+  schedule:
+    - cron: '0 0 * * 0' # Weekly sync
+
+permissions:
+  contents: write
+
+jobs:
+  build-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Run Editorial Hub, Image Downloader & SEO Generator
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          HUB_BASE_URL: ${{ github.event.inputs.hub_base_url }}
+        run: python generate_pages.py "${{ github.event.inputs.sitemap_url || 'https://stylesdays.com/sitemap_index.xml' }}"
+
+      - name: Commit and push generated pages, images & SEO files
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "Auto-generate pages, local images, sitemap.xml & robots.txt [skip ci]"
+            git push
+            echo "Successfully deployed all pages, local images, and SEO assets!"
+          else
+            echo "No new changes detected."
+          fi
